@@ -24,7 +24,7 @@ public class ConexionMySql {
         try {
             Class.forName(DRIVER);
             conn = (Connection) DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Conectado con éxito!");
+            //System.out.println("Conectado con éxito!");
         } catch (Exception e) {
             e.printStackTrace();
         }
