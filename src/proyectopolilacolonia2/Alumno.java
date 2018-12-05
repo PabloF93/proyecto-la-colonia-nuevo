@@ -31,6 +31,39 @@ public class Alumno extends Persona {
         return rs;
     }
     
+    public Alumno findByCodTarjeta(String codTarjeta) {
+        Alumno alumno = new Alumno();
+        this.conn = ConexionMySql.getConnection();
+        try {
+            stmt = conn.prepareStatement("SELECT * FROM personas WHERE codTarjeta=? AND tipo=? AND isDeleted=?");
+            stmt.setString(1, codTarjeta);
+            stmt.setString(2, "alumno");
+            stmt.setBoolean(3, false);
+            
+            rs = stmt.executeQuery();
+            
+            if(rs != null) {
+                while(rs.next()) {
+                    alumno.setId(rs.getInt("id"));
+                    alumno.setCodTarjeta(rs.getString("codTarjeta"));
+                    alumno.setFechaNacimiento(rs.getDate("fechaNacimiento").toLocalDate());
+                    alumno.setNombreCompleto(rs.getString("nombreCompleto"));
+                    alumno.setSexo(rs.getString("sexo"));
+                    alumno.setTelefono(rs.getString("telefono"));
+                    alumno.setTipo(rs.getString("tipo"));
+                    alumno.setDni(rs.getString("dni"));
+                    alumno.setCreated_at(rs.getTimestamp("created_at").toLocalDateTime());
+                    
+                }
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return alumno;
+    }
+    
     public void save(Alumno alumno) {
         this.conn = ConexionMySql.getConnection();
         try {

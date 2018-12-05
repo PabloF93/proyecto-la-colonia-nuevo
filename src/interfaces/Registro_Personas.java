@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import proyectopolilacolonia2.Alumno;
+import proyectopolilacolonia2.Profesor;
 
 /**
  *
@@ -33,10 +34,35 @@ public class Registro_Personas extends javax.swing.JFrame {
             anoCBox.addItem(String.valueOf(i));
         }
         
+        this.mostrarAlumnos();
+        
     }
     
     private void mostrarProfesores() {
+        DefaultTableModel modelo = (DefaultTableModel) this.personasJTable.getModel();
+        int columnas = modelo.getColumnCount();
+        modelo.setRowCount(0);
         
+        rs = new Profesor().list();
+        
+        try {
+            while(rs.next()) {
+                Object fila[] = new Object[columnas];
+                
+                fila[0] = rs.getObject("id");
+                fila[1] = rs.getObject("dni");
+                fila[2] = rs.getObject("codTarjeta");
+                fila[3] = rs.getObject("nombreCompleto");
+                fila[4] = rs.getObject("telefono");
+                fila[5] = rs.getObject("sexo");
+                fila[6] = rs.getObject("fechaNacimiento");
+                fila[7] = rs.getObject("created_at");
+                
+                modelo.addRow(fila);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     private void mostrarAdministrativos() {
@@ -45,6 +71,8 @@ public class Registro_Personas extends javax.swing.JFrame {
     
     private void mostrarAlumnos() {
         DefaultTableModel modelo = (DefaultTableModel) this.personasJTable.getModel();
+        modelo.setRowCount(0);
+        
         
         rs = new Alumno().list();
         
@@ -66,6 +94,7 @@ public class Registro_Personas extends javax.swing.JFrame {
                 modelo.addRow(fila);
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         
         
@@ -87,6 +116,7 @@ public class Registro_Personas extends javax.swing.JFrame {
         editarItem = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
+        jLabel12 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         tipoCBox = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
@@ -122,24 +152,29 @@ public class Registro_Personas extends javax.swing.JFrame {
         editarItem.setText("Editar...");
         personasPopUpMenu.add(editarItem);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jPanel2.setBackground(new java.awt.Color(102, 255, 51));
+        jPanel2.setBackground(new java.awt.Color(56, 142, 60));
+
+        jLabel12.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("REGISTRO DE USUARIOS");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 37, Short.MAX_VALUE)
+            .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
         );
 
-        jLabel1.setText("Tipo de persona:");
+        jLabel1.setText("Tipo de usuario:");
 
         tipoCBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Alumno", "Profesor", "Administrativo" }));
         tipoCBox.addActionListener(new java.awt.event.ActionListener() {
@@ -269,7 +304,7 @@ public class Registro_Personas extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(tipoCBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -406,7 +441,19 @@ public class Registro_Personas extends javax.swing.JFrame {
                 alumno.setTipo("alumno");
                 alumno.save(alumno);
                 
-                
+            } else {
+                if(this.tipoCBox.getSelectedItem().toString().equalsIgnoreCase("profesor")) {
+                    Profesor profesor = new Profesor();
+                    profesor.setNombreCompleto(nombreCompleto);
+                    profesor.setCodTarjeta(codTarjeta);
+                    profesor.setSexo(sexo);
+                    profesor.setTelefono(telefono);
+                    profesor.setDni(dni);
+                    profesor.setCreated_at(LocalDateTime.now());
+                    profesor.setFechaNacimiento(fechaNacimiento);
+                    profesor.setTipo("profesor");
+                    profesor.save(profesor);
+                }
             }
             
         }
@@ -419,7 +466,7 @@ public class Registro_Personas extends javax.swing.JFrame {
         if(tipo.equalsIgnoreCase("alumno")) {
             mostrarAlumnos();
         } else {
-            if(tipo.equalsIgnoreCase("profesores")) {
+            if(tipo.equalsIgnoreCase("profesor")) {
                 mostrarProfesores();
             } else {
                 mostrarAdministrativos();
@@ -494,6 +541,7 @@ public class Registro_Personas extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
